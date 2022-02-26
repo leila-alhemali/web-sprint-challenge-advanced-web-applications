@@ -28,7 +28,6 @@ export default function LoginForm(props) {
     } else {
       return true
     }
-
   }
 
   return (

@@ -21,38 +21,28 @@ export default function App() {
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate();
   const redirectToLogin = () => {
-    /* ✨ implement */
-    
+    navigate("/")
   };
   const redirectToArticles = () => {
-    /* ✨ implement */
-  };
+    navigate("/articles")  };
 
   const logout = () => {
-    // ✨ implement
-    // If a token is in local storage it should be removed,
-    // and a message saying "Goodbye!" should be set in its proper state.
-    // In any case, we should redirect the browser back to the login screen,
-    // using the helper above.
+   
     window.localStorage.removeItem("token");
     navigate("/");
     setMessage("Goodbye!");
+    redirectToLogin()
   };
 
   const login = ({ username, password }) => {
-    // ✨ implement
-    // We should flush the message state, turn on the spinner
-    // and launch a request to the proper endpoint.
-    // On success, we should set the token to local storage in a 'token' key,
-    // put the server success message in its proper state, and redirect
-    // to the Articles screen. Don't forget to turn off the spinner
+    
     setMessage("");
     setSpinnerOn(true)
     axios
       .post(loginUrl, { username, password })
       .then((res) => {
         window.localStorage.setItem("token", res.data.token);
-        navigate("/articles");
+        redirectToArticles();
       })
       .catch((err) => {
         console.log(err);
@@ -100,9 +90,7 @@ console.log(spinnerOn)
       .then((res) => {
         setArticles(
           articles.map((art) => {
-            // if its the article with the id
-            // swap it with the one in res.data.article (and return that)
-            // otherwise return art
+
             return art.article_id == article_id ? res.data.article : art;
           })
         );
@@ -132,7 +120,7 @@ console.log(spinnerOn)
   return (
     // ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
     <React.StrictMode>
-      {spinnerOn === true ? <Spinner on={spinnerOn}/> : null}
+      <Spinner on={spinnerOn}/>
       <Message message={message} />
       <button id="logout" onClick={logout}>
         Logout from app
