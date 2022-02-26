@@ -11,6 +11,7 @@ import axios from 'axios'
 const articlesUrl = 'http://localhost:9000/api/articles'
 const loginUrl = 'http://localhost:9000/api/login'
 
+
 export default function App() {
   // ✨ MVP can be achieved with these states
   const [message, setMessage] = useState('')
@@ -29,8 +30,8 @@ export default function App() {
     // and a message saying "Goodbye!" should be set in its proper state.
     // In any case, we should redirect the browser back to the login screen,
     // using the helper above.
-   
-
+    window.localStorage.removeItem('token')
+    navigate('/')
   }
 
   const login = ({ username, password }) => {
@@ -63,31 +64,57 @@ export default function App() {
     axiosWithAuth().get(articlesUrl)
     .then(res => {
       setArticles(res.data.articles)
+      setMessage(res.data.message)
+      console.log(message)
     })
 
   }
 
-  const postArticle = article => {
+  const postArticle = ({ title, text, topic}) => {
     // ✨ implement
     // The flow is very similar to the `getArticles` function.
     // You'll know what to do! Use log statements or breakpoints
     // to inspect the response from the server.
+    axiosWithAuth().post(articlesUrl, { title, text, topic})
+    .then(res => {
+      setArticles([...articles, res.data.article])
+      console.log(articles)
+      setMessage(res.data.message)
+    })
   }
 
   const updateArticle = ({ article_id, article }) => {
-    // ✨ implement
-    // You got this!
+    axiosWithAuth().put(`${articlesUrl}/${article_id}`, article)
+    .then(res => {
+      setArticles(articles.map(art => {
+        // if its the article with the id
+        // swap it with the one in res.data.article (and return that)
+        // otherwise return art
+        return (art.id == article_id) ? res.data.article : art
+      }))
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }
 
   const deleteArticle = article_id => {
-    // ✨ implement
+    axiosWithAuth().delete(`${articlesUrl}/${article_id}`)
+      .then(art => {
+        setArticles(articles.filter((art) => {
+          return art.article_id != article_id
+        }))
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   return (
     // ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
     <React.StrictMode>
       <Spinner spinnerOn={spinnerOn}/>
-      <Message />
+      <Message message={message}/>
       <button id="logout" onClick={logout}>Logout from app</button>
       <div id="wrapper" style={{ opacity: spinnerOn ? "0.25" : "1" }}> {/* <-- do not change this line */}
         <h1>Advanced Web Applications</h1>
@@ -99,8 +126,8 @@ export default function App() {
           <Route path="/" element={<LoginForm login={login} />} />
           <Route path="articles" element={
             <>
-              <ArticleForm />
-              <Articles getArticles={getArticles} articles={articles} />
+              <ArticleForm postArticle={postArticle} updateArticle={updateArticle} currentArticleId={currentArticleId} setCurrentArticleId={setCurrentArticleId} />
+              <Articles getArticles={getArticles} articles={articles} deleteArticle={deleteArticle} setCurrentArticleId={setCurrentArticleId}  />
             </>
           } />
         </Routes>

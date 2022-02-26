@@ -4,12 +4,11 @@ import PT from 'prop-types'
 
 export default function Articles(props) {
   // ✨ where are my props? Destructure them here
-  const { getArticles, articles } = props
+  const { getArticles, articles, currentArticleId, deleteArticle, setCurrentArticleId } = props
 
   if (!window.localStorage.getItem('token')) {
     return <Navigate to="/" />
   }
-
   useEffect(() => {
     // ✨ grab the articles here, on first render only
     getArticles()
@@ -32,8 +31,8 @@ export default function Articles(props) {
                   <p>Topic: {art.topic}</p>
                 </div>
                 <div>
-                  <button disabled={true} onClick={Function.prototype}>Edit</button>
-                  <button disabled={true} onClick={Function.prototype}>Delete</button>
+                  <button disabled={false} onClick={evt => setCurrentArticleId(art.article_id) }>Edit</button>
+                  <button disabled={false} onClick={evt => deleteArticle(art.article_id)}>Delete</button>
                 </div>
               </div>
             )
