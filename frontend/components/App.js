@@ -22,6 +22,7 @@ export default function App() {
   const navigate = useNavigate();
   const redirectToLogin = () => {
     /* ✨ implement */
+    
   };
   const redirectToArticles = () => {
     /* ✨ implement */
@@ -46,7 +47,7 @@ export default function App() {
     // put the server success message in its proper state, and redirect
     // to the Articles screen. Don't forget to turn off the spinner
     setMessage("");
-    setSpinnerOn()
+    setSpinnerOn(true)
     axios
       .post(loginUrl, { username, password })
       .then((res) => {
@@ -55,9 +56,10 @@ export default function App() {
       })
       .catch((err) => {
         console.log(err);
-      });
+      })
+      .finally(() => setSpinnerOn(false))
   };
-
+  
   const getArticles = () => {
     // ✨ implement
     // We should flush the message state, turn on the spinner
@@ -67,15 +69,17 @@ export default function App() {
     // If something goes wrong, check the status of the response:
     // if it's a 401 the token might have gone bad, and we should redirect to login.
     // Don't forget to turn off the spinner!
+    setSpinnerOn(true)
     axiosWithAuth()
       .get(articlesUrl)
       .then((res) => {
         setArticles(res.data.articles);
         setMessage(res.data.message);
         console.log(message);
-      });
+      })
+      .finally(() => setSpinnerOn(false))
   };
-
+console.log(spinnerOn)
   const postArticle = ({ title, text, topic }) => {
     // ✨ implement
     // The flow is very similar to the `getArticles` function.
@@ -102,7 +106,7 @@ export default function App() {
             return art.article_id == article_id ? res.data.article : art;
           })
         );
-        console.log(currentArticleId);
+        setMessage(res.data.message);
       })
       .catch((err) => {
         console.log(err);
@@ -128,7 +132,7 @@ export default function App() {
   return (
     // ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
     <React.StrictMode>
-      <Spinner spinnerOn={spinnerOn} />
+      {spinnerOn === true ? <Spinner on={spinnerOn}/> : null}
       <Message message={message} />
       <button id="logout" onClick={logout}>
         Logout from app
