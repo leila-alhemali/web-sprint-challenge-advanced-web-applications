@@ -35,6 +35,7 @@ export default function App() {
     // using the helper above.
     window.localStorage.removeItem("token");
     navigate("/");
+    setMessage("Goodbye!");
   };
 
   const login = ({ username, password }) => {
@@ -44,6 +45,8 @@ export default function App() {
     // On success, we should set the token to local storage in a 'token' key,
     // put the server success message in its proper state, and redirect
     // to the Articles screen. Don't forget to turn off the spinner
+    setMessage("");
+    setSpinnerOn()
     axios
       .post(loginUrl, { username, password })
       .then((res) => {
@@ -87,7 +90,7 @@ export default function App() {
       });
   };
 
-  const updateArticle = (article_id, article ) => {
+  const updateArticle = (article_id, article) => {
     axiosWithAuth()
       .put(`${articlesUrl}/${article_id}`, article)
       .then((res) => {
